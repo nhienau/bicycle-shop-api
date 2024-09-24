@@ -11,7 +11,7 @@ namespace api.Mappers
             {
                 Id = productModel.Id,
                 Name = productModel.Name,
-                Price = productModel.Price,
+                Description = productModel.Description,
                 Status = productModel.Status,
             };
         }
@@ -20,7 +20,7 @@ namespace api.Mappers
             return new Product
             {
                 Name = productDto.Name,
-                Price = productDto.Price,
+                Description = productDto.Description,
                 ProductCategoryId = productDto.ProductCategoryId,
                 Status = true,
             };

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Folder Include="Dtos\Cart\" />
+    <Folder Include="Dtos\ProductImage\" />
     <Folder Include="Dtos\User\" />
     <Folder Include="Dtos\ProductCategory\" />
     <Folder Include="Dtos\OrderDetail\" />

@@ -1,6 +1,5 @@
 ﻿using api.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace api.Data
 {
@@ -14,12 +13,12 @@ namespace api.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
-                .HasMany(e => e.Products)
+                .HasMany(e => e.ProductDetails)
                 .WithMany(e => e.Users)
                 .UsingEntity<Cart>();
 
             modelBuilder.Entity<Order>()
-                .HasMany(e => e.Products)
+                .HasMany(e => e.ProductDetails)
                 .WithMany(e => e.Orders)
                 .UsingEntity<OrderDetail>();
         }
@@ -29,6 +28,8 @@ namespace api.Data
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
+        public DbSet<ProductDetail> ProductDetails { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<User> Users { get; set; }
 
     }

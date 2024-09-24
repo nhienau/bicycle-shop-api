@@ -7,8 +7,7 @@ namespace api.Dtos.Product
         [Required]
         public string Name { get; set; } = string.Empty;
         [Required]
-        [Range(1, long.MaxValue)]
-        public long Price { get; set; }
+        public string Description { get; set; } = string.Empty;
         public int ProductCategoryId { get; set; }
     }
 }

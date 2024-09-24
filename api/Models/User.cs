@@ -10,7 +10,7 @@
         public string PhoneNumber {  get; set; } = string.Empty;
         public bool Status { get; set; }
         public List<Cart> Carts { get; } = [];
-        public List<Product> Products { get; } = [];
+        public List<ProductDetail> ProductDetails { get; } = [];
         public List<Order> Orders { get; set; } = [];
     }
 }

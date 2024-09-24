@@ -10,7 +10,7 @@
         public string PhoneNumber { get; set; } = string.Empty;
         public DateTime OrderDate { get; set; }
         public int Status { get; set; }
-        public List<Product> Products { get; } = [];
+        public List<ProductDetail> ProductDetails { get; } = [];
         public List<OrderDetail> OrderDetails { get; } = [];
     }
 }

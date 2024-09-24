@@ -61,7 +61,7 @@ namespace api.Repositories
             }
 
             existingProduct.Name = productDto.Name;
-            existingProduct.Price = productDto.Price;
+            existingProduct.Description = productDto.Description;
             existingProduct.ProductCategoryId = productDto.ProductCategoryId;
 
             await _context.SaveChangesAsync();
