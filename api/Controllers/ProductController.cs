@@ -27,7 +27,7 @@ namespace api.Controllers
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             Product? product = await _productRepo.GetByIdAsync(id);
-            if (product == null)
+            if (product == null || (product != null && !product.Status))
             {
                 return NotFound();
             }
