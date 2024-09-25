@@ -38,12 +38,12 @@ namespace api.Repositories
 
         public Task<List<Product>> GetAllAsync()
         {
-            return _context.Products.ToListAsync();
+            return _context.Products.Include(p => p.ProductDetails).ToListAsync();
         }
 
         public Task<Product?> GetByIdAsync(int id)
         {
-            return _context.Products.FirstOrDefaultAsync(i => i.Id == id);
+            return _context.Products.Include(p => p.ProductDetails).FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public Task<bool> ProductExists(int id)

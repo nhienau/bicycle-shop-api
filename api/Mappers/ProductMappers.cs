@@ -13,6 +13,7 @@ namespace api.Mappers
                 Name = productModel.Name,
                 Description = productModel.Description,
                 Status = productModel.Status,
+                ProductDetails = productModel.ProductDetails.Select(pd => pd.ToProductDetailDto()).ToList()
             };
         }
         public static Product ToProductFromCreateDto(this CreateProductRequestDto productDto)

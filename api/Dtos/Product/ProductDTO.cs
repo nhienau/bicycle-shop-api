@@ -1,4 +1,4 @@
-﻿using api.Models;
+﻿using api.Dtos.ProductDetail;
 
 namespace api.Dtos.Product
 {
@@ -8,5 +8,6 @@ namespace api.Dtos.Product
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public bool Status { get; set; }
+        public List<ProductDetailDto> ProductDetails { get; set; } = [];
     }
 }
