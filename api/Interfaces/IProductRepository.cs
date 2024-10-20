@@ -1,11 +1,12 @@
 ﻿using api.Dtos.Product;
 using api.Models;
+using api.Utilities;
 
 namespace api.Interfaces
 {
     public interface IProductRepository
     {
-        Task<List<Product>> GetAllAsync();
+        Task<PaginatedResponse<ProductDTO>> GetAllAsync(ProductQueryDTO query);
         Task<Product?> GetByIdAsync(int id);
         Task<Product> CreateAsync(Product product);
         Task<Product?> UpdateAsync(int id, UpdateProductRequestDto productDto);
