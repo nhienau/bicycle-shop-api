@@ -1,7 +1,9 @@
 ﻿using api.Data;
 using api.Dtos.Product;
 using api.Interfaces;
+using api.Mappers;
 using api.Models;
+using api.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories
@@ -36,9 +38,23 @@ namespace api.Repositories
             return product;
         }
 
-        public Task<List<Product>> GetAllAsync()
+        public async Task<PaginatedResponse<ProductDTO>> GetAllAsync(ProductQueryDTO query)
         {
-            return _context.Products.Include(p => p.ProductDetails).ToListAsync();
+            IQueryable<Product> products = _context.Products.Include(p => p.ProductDetails).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.Name))
+            {
+                products = products.Where(p => p.Name.Contains(query.Name));
+            }
+
+            int totalElements = await products.CountAsync();
+
+            int recordsSkipped = (query.PageNumber - 1) * query.PageSize;
+
+            var result = await products.Skip(recordsSkipped).Take(query.PageSize).ToListAsync();
+            var resultDto = result.Select(p => p.ToProductDto()).ToList();
+
+            return new PaginatedResponse<ProductDTO>(resultDto, query.PageNumber, query.PageSize, totalElements);
         }
 
         public Task<Product?> GetByIdAsync(int id)

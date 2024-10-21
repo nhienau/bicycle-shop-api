@@ -2,6 +2,7 @@
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
+using api.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -17,11 +18,10 @@ namespace api.Controllers
             _productRepo = productRepo;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] ProductQueryDTO query)
         {
-            List<Product> list = await _productRepo.GetAllAsync();
-            var listDtos = list.Select(p => p.ToProductDto());
-            return Ok(listDtos);
+            PaginatedResponse<ProductDTO> list = await _productRepo.GetAllAsync(query);
+            return Ok(list);
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
