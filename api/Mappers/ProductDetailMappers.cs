@@ -18,5 +18,18 @@ namespace api.Mappers
                 ProductId = productDetail.ProductId,
             };
         }
+
+        public static ProductDetail ToProductDetailFromRequestDto(this ProductDetailRequestDto productDetailDto)
+        {
+            return new ProductDetail
+            {
+                Size = productDetailDto.Size,
+                Color = productDetailDto.Color,
+                Price = productDetailDto.Price,
+                Quantity = productDetailDto.Quantity,
+                ProductId = productDetailDto.ProductId,
+                Status = true,
+            };
+        }
     }
 }
