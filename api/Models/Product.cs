@@ -9,5 +9,6 @@
         public ProductCategory? ProductCategory { get; set; }
         public bool Status { get; set; }
         public List<ProductDetail> ProductDetails { get; } = [];
+        public List<ProductImage> ProductImages { get; } = [];
     }
 }
