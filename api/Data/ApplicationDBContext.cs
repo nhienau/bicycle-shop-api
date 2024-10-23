@@ -21,6 +21,12 @@ namespace api.Data
                 .HasMany(e => e.ProductDetails)
                 .WithMany(e => e.Orders)
                 .UsingEntity<OrderDetail>();
+
+            modelBuilder.Entity<ProductDetail>()
+                .HasOne(e => e.ProductImage)
+                .WithOne(e => e.ProductDetail)
+                .HasForeignKey<ProductImage>(e => e.ProductDetailId)
+                .IsRequired(false);
         }
 
         public DbSet<Cart> Carts { get; set; }

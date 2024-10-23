@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -23,7 +25,6 @@
 
   <ItemGroup>
     <Folder Include="Dtos\Cart\" />
-    <Folder Include="Dtos\ProductImage\" />
     <Folder Include="Dtos\User\" />
     <Folder Include="Dtos\ProductCategory\" />
     <Folder Include="Dtos\OrderDetail\" />

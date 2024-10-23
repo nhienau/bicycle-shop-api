@@ -10,7 +10,7 @@
         public long Price { get; set; }
         public int Quantity { get; set; }
         public bool Status { get; set; }
-        public List<ProductImage> ProductImages { get; } = [];
+        public ProductImage? ProductImage { get; set; }
         public List<Cart> Carts { get; } = [];
         public List<User> Users { get; } = [];
         public List<Order> Orders { get; } = [];
