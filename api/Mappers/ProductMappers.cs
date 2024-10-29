@@ -7,14 +7,19 @@ namespace api.Mappers
     {
         public static ProductDTO ToProductDto(this Product productModel)
         {
-            return new ProductDTO
+            ProductDTO dto = new ProductDTO
             {
                 Id = productModel.Id,
                 Name = productModel.Name,
                 Description = productModel.Description,
                 Status = productModel.Status,
-                ProductDetails = productModel.ProductDetails.Select(pd => pd.ToProductDetailDto()).ToList()
+                ProductDetails = productModel.ProductDetails.Select(pd => pd.ToProductDetailDto()).ToList(),
             };
+            if (productModel.ProductCategory != null)
+            {
+                dto.ProductCategory = productModel.ProductCategory.ToProductCategoryDto();
+            }
+            return dto;
         }
         public static Product ToProductFromCreateDto(this CreateProductRequestDto productDto)
         {

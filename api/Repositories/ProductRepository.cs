@@ -40,7 +40,11 @@ namespace api.Repositories
 
         public async Task<PaginatedResponse<ProductDTO>> GetAllAsync(ProductQueryDTO query)
         {
-            IQueryable<Product> products = _context.Products.Include(p => p.ProductDetails).AsQueryable();
+            IQueryable<Product> products = _context.Products
+                .Where(p => p.Status == true)
+                .Include(p => p.ProductCategory)
+                .Include(p => p.ProductDetails)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.Name))
             {
