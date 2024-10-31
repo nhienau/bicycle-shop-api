@@ -19,8 +19,8 @@ namespace api.Controllers
             _productImageRepo = productImageRepo;
         }
 
-        [HttpPost("/upload")]
-        public async Task<IActionResult> UploadAsync(List<IFormFile> files, List<int?> productDetailIds, int productId)
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadAsync([FromForm] List<IFormFile> files, [FromForm] List<int?> productDetailIds, [FromForm] int productId)
         {
             List<ProductImage> results = new List<ProductImage>();
             for (int i = 0; i < files.Count; i++) {
@@ -31,10 +31,10 @@ namespace api.Controllers
                 ProductImage result = await _productImageRepo.CreateAsync(url, productDetailId, productId);
                 results.Add(result);
             }
-            return CreatedAtAction(nameof(UploadAsync), results.Select(i => i.ToProductImageDto()).ToList());
+            return Ok();
         }
 
-        [HttpPost("/delete")]
+        [HttpPost("delete")]
         public async Task<IActionResult> DeleteAsync([FromBody] DeleteImageRequestDto req)
         {
             List<int> id = req.Id;
