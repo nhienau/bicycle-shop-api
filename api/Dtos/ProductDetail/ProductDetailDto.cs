@@ -1,4 +1,6 @@
 ﻿using api.Models;
+using api.Dtos.Cart;
+using api.Dtos.Product;
 
 namespace api.Dtos.ProductDetail
 {
@@ -11,5 +13,8 @@ namespace api.Dtos.ProductDetail
         public int Quantity { get; set; }
         public bool Status { get; set; }
         public int? ProductId { get; set; }
+        public ProductDTO? Product { get; set; }
+        //public List<CartDTO> Carts { get; set; } = [];
+
     }
 }
