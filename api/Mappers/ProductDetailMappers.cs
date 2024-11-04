@@ -16,6 +16,24 @@ namespace api.Mappers
                 Quantity = productDetail.Quantity,
                 Status = productDetail.Status,
                 ProductId = productDetail.ProductId,
+                //Product = productDetail.Product.ToProductDto()
+                //Carts = productDetail.Carts.Select(pd => pd.ToCartDto()).ToList()
+            };
+        }
+
+        public static ProductDetailDto ToProductDetailDto1(this ProductDetail productDetail)
+        {
+            return new ProductDetailDto
+            {
+                Id = productDetail.Id,
+                Size = productDetail.Size,
+                Color = productDetail.Color,
+                Price = productDetail.Price,
+                Quantity = productDetail.Quantity,
+                Status = productDetail.Status,
+                ProductId = productDetail.ProductId,
+                Product = productDetail.Product.ToProductDto()
+                //Carts = productDetail.Carts.Select(pd => pd.ToCartDto()).ToList()
             };
         }
 
