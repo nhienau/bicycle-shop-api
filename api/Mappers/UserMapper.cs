@@ -17,5 +17,18 @@ namespace api.Mappers
                 PhoneNumber = userModel.PhoneNumber,
             };
         }
+
+        public static User ToUserFromCreateDTO(this CreateUserRequestDTO userDTO)
+        {
+            return new User
+            {
+                Email = userDTO.Email,
+                Password = userDTO.Password,
+                Name = userDTO.Name,
+                Address = userDTO.Address,
+                PhoneNumber = userDTO.PhoneNumber,
+                Status = true,
+            };
+        }
     }
 }

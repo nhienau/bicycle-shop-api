@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Compile Remove="Dtos\ProductDetail\ProductDetailQueryDTO.cs" />
+    <Compile Remove="Dtos\ProductDetail\UpdateUserRequestDTO.cs" />
   </ItemGroup>
 
   <ItemGroup>
