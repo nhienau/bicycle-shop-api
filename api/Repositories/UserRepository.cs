@@ -1,4 +1,5 @@
 ﻿using api.Data;
+using api.Dtos.Product;
 using api.Dtos.User;
 using api.Interfaces;
 using api.Mappers;
@@ -33,6 +34,53 @@ namespace api.Repositories
             var resultDto = result.Select(p => p.ToUserDto()).ToList();
 
             return new PaginatedResponse<UserDTO>(resultDto, query.PageNumber, query.PageSize, totalElements);
+        }
+
+        public async Task<User> CreateAsync(User user)
+        {
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
+        public Task<User?> GetByIdAsync(int id)
+        {
+            return _context.Users.FirstOrDefaultAsync(i => i.Id == id);
+        }
+
+        public async Task<User?> UpdateAsync(int id, UpdateUserRequestDTO userDTO)
+        {
+            User? existingUser = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (existingUser == null || (existingUser != null && existingUser.Status == false))
+            {
+                return null;
+            }
+
+            existingUser.Email = userDTO.Name;
+            existingUser.Password = userDTO.Password;
+            existingUser.Name = userDTO.Name;
+            existingUser.Address = userDTO.Address;
+            existingUser.PhoneNumber = userDTO.PhoneNumber;
+
+            await _context.SaveChangesAsync();
+
+            return existingUser;
+        }
+
+        public async Task<User?> DeleteAsync(int id)
+        {
+            User? user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (user == null || (user != null && user.Status == false))
+            {
+                return null;
+            }
+
+            //_context.Products.Remove(product);
+            user.Status = false;
+            await _context.SaveChangesAsync();
+            return user;
         }
     }
 }
