@@ -6,6 +6,7 @@ using api.Mappers;
 using api.Models;
 using api.Utilities;
 using Microsoft.EntityFrameworkCore;
+using BCrypt.Net;
 
 namespace api.Repositories
 {
@@ -38,6 +39,7 @@ namespace api.Repositories
 
         public async Task<User> CreateAsync(User user)
         {
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
@@ -81,6 +83,11 @@ namespace api.Repositories
             user.Status = false;
             await _context.SaveChangesAsync();
             return user;
+        }
+
+        public User GetUserByUsername(string username)
+        {
+            return _context.Users.SingleOrDefault(u => u.Name == username);
         }
     }
 }

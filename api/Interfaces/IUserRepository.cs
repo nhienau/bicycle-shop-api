@@ -15,5 +15,7 @@ namespace api.Interfaces
 
         Task<User?> UpdateAsync(int id, UpdateUserRequestDTO userDTO);
         Task<User?> DeleteAsync(int id);
+
+        User GetUserByUsername(string username);
     }
 }
