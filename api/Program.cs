@@ -52,6 +52,7 @@ builder.Services.AddScoped<ICloudinaryRepository, CloudinaryRepository>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 // Register Cloudinary as a singleton service
 Account cloudinaryAccount = new Account(cloudinaryConfig.CloudName, cloudinaryConfig.ApiKey, cloudinaryConfig.ApiSecret);
