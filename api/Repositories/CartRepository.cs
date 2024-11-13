@@ -76,7 +76,7 @@ namespace api.Repositories
             //{
             //    products = products.Where(p => p.Name.Contains(query.Name));
             //}
-            IQueryable<Cart> carts = _context.Carts.Include(c => c.ProductDetail).AsQueryable();
+            IQueryable<Cart> carts = _context.Carts.Include(c => c.ProductDetail).ThenInclude(pd => pd.Product).AsQueryable();
 
             int totalElements = await carts.CountAsync();
 

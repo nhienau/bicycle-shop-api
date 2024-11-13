@@ -6,12 +6,15 @@ using api.Mappers;
 using api.Models;
 using api.Utilities;
 using Microsoft.EntityFrameworkCore;
+using BCrypt.Net;
+using Microsoft.AspNetCore.Identity;
 
 namespace api.Repositories
 {
     public class UserRepository : IUserRepository
     {
         private readonly ApplicationDBContext _context;
+        //private readonly IPasswordHasher<User> _passwordHasher;
         public UserRepository(ApplicationDBContext context)
         {
             _context = context;
@@ -38,6 +41,7 @@ namespace api.Repositories
 
         public async Task<User> CreateAsync(User user)
         {
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
@@ -46,6 +50,11 @@ namespace api.Repositories
         public Task<User?> GetByIdAsync(int id)
         {
             return _context.Users.FirstOrDefaultAsync(i => i.Id == id);
+        }
+
+        public async Task<User> GetUserByIdAsync(int userId)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task<User?> UpdateAsync(int id, UpdateUserRequestDTO userDTO)
@@ -81,6 +90,29 @@ namespace api.Repositories
             user.Status = false;
             await _context.SaveChangesAsync();
             return user;
+        }
+
+        public User GetUserByUsername(string username)
+        {
+            return _context.Users.SingleOrDefault(u => u.Name == username);
+        }
+
+        public User GetUserByUserEmail(string email)
+        {
+            return _context.Users.SingleOrDefault(u => u.Email == email);
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task RegisterUserAsync(User user)
+        {
+            //user.Password = _passwordHasher.HashPassword(user, user.Password); // Băm mật khẩu
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            _context.Users.Add(user); // Thêm người dùng vào database
+            await _context.SaveChangesAsync();
         }
     }
 }

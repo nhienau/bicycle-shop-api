@@ -2,6 +2,7 @@
 using api.Dtos.User;
 using api.Models;
 using api.Utilities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace api.Interfaces
 {
@@ -15,5 +16,13 @@ namespace api.Interfaces
 
         Task<User?> UpdateAsync(int id, UpdateUserRequestDTO userDTO);
         Task<User?> DeleteAsync(int id);
+
+        User GetUserByUsername(string username);
+        User GetUserByUserEmail(string email);
+
+        Task<User> GetUserByIdAsync(int userId);
+        Task<User> GetUserByEmailAsync(string email);
+        Task RegisterUserAsync(User user);
+
     }
 }
