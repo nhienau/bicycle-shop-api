@@ -12,5 +12,8 @@
         //public ICollection<Cart> Carts { get; set; }
         public List<ProductDetail> ProductDetails { get; } = [];
         public List<Order> Orders { get; set; } = [];
+
+        //public string Otp { get; set; }
+        //public DateTime? OtpExpiration { get; set; }
     }
 }

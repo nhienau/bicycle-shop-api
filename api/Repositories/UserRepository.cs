@@ -114,5 +114,28 @@ namespace api.Repositories
             _context.Users.Add(user); // Thêm người dùng vào database
             await _context.SaveChangesAsync();
         }
+
+        //public async Task SaveOtpAsync(int userId, string otp)
+        //{
+        //    var user = await _context.Users.FindAsync(userId);
+        //    if (user != null)
+        //    {
+        //        user.Otp = otp;
+        //        user.OtpExpiration = DateTime.UtcNow.AddMinutes(1); // OTP có hiệu lực trong 5 phút
+        //        await _context.SaveChangesAsync();
+        //    }
+        //}
+
+        //public async Task<bool> ValidateOtpAsync(int userId, string otp)
+        //{
+        //    var user = await _context.Users.FindAsync(userId);
+        //    return user != null && user.Otp == otp && user.OtpExpiration > DateTime.UtcNow;
+        //}
+
+        //public async Task BlacklistTokenAsync(string token)
+        //{
+        //    _context.TokenBlacklist.Add(new TokenBlacklist { Token = token, CreatedAt = DateTime.UtcNow });
+        //    await _context.SaveChangesAsync();
+        //}
     }
 }
