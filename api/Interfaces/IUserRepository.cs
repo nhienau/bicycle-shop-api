@@ -24,5 +24,9 @@ namespace api.Interfaces
         Task<User> GetUserByEmailAsync(string email);
         Task RegisterUserAsync(User user);
 
+        //Task BlacklistTokenAsync(string token);
+        //Task SaveOtpAsync(int userId, string otp);
+        //Task<bool> ValidateOtpAsync(int userId, string otp);
+
     }
 }
