@@ -115,6 +115,16 @@ namespace api.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdatePasswordAsync(int userId, string newPasswordHash)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user != null)
+            {
+                user.Password = newPasswordHash;
+                await _context.SaveChangesAsync();
+            }
+        }
+
         //public async Task SaveOtpAsync(int userId, string otp)
         //{
         //    var user = await _context.Users.FindAsync(userId);
