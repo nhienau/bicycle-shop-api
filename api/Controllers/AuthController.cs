@@ -176,7 +176,7 @@ namespace api.Controllers
             var encryptedOtpToken = GenerateOtpToken(otp, expirationTime);
 
             // Send OTP to user's email
-            SendEmail(user.Email, "Your OTP Code", $"Your OTP code is {otp}. This code is valid for 1 minutes.");
+            SendEmail(user.Email, "Mã OTP Của Bạn", $"Mã OTP xác thực để thay đổi mật khẩu đã quên là {otp}, hiệu lực 1 phút.");
 
             //return Ok("OTP sent to your email.");
             return Ok(new

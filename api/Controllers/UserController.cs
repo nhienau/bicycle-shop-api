@@ -3,6 +3,7 @@ using api.Dtos.User;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
+using api.Repositories;
 using api.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -71,6 +72,30 @@ namespace api.Controllers
             }
 
             return Ok(user.ToUserDto());
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDTO request)
+        {
+            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.NewPassword))
+            {
+                return BadRequest("Email and new password are required.");
+            }
+
+            // Tìm người dùng theo email
+            var user = await _userRepo.GetUserByEmailAsync(request.Email);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Hash mật khẩu mới
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+            // Cập nhật mật khẩu
+            await _userRepo.UpdatePasswordAsync(user.Id, passwordHash);
+
+            return Ok("Password changed successfully.");
         }
     }
 }
