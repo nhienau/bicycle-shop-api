@@ -8,16 +8,12 @@
 
   <ItemGroup>
     <Compile Remove="Dtos\Cart\NewFolder\**" />
-    <Compile Remove="Dtos\NewFolder\**" />
     <Compile Remove="Dtos\User\NewFolder\**" />
     <Content Remove="Dtos\Cart\NewFolder\**" />
-    <Content Remove="Dtos\NewFolder\**" />
     <Content Remove="Dtos\User\NewFolder\**" />
     <EmbeddedResource Remove="Dtos\Cart\NewFolder\**" />
-    <EmbeddedResource Remove="Dtos\NewFolder\**" />
     <EmbeddedResource Remove="Dtos\User\NewFolder\**" />
     <None Remove="Dtos\Cart\NewFolder\**" />
-    <None Remove="Dtos\NewFolder\**" />
     <None Remove="Dtos\User\NewFolder\**" />
   </ItemGroup>
 
@@ -44,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\ProductCategory\" />
     <Folder Include="Dtos\OrderDetail\" />
     <Folder Include="Dtos\Order\" />
   </ItemGroup>
