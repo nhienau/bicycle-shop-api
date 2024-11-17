@@ -3,9 +3,8 @@
 namespace api.Dtos.Product
 {
     public class UpdateProductCategoryRequestDto
-    {
-        [Required]
-        public string Name { get; set; } = string.Empty;
-        public bool Status { get; set; }
+    {                
+        public string? Name { get; set; }
+        public bool? Status { get; set; }
     }
 }

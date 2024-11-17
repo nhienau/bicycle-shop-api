@@ -11,6 +11,6 @@ namespace api.Interfaces
         Task<ProductCategory> CreateAsync(ProductCategory productCategory);
         Task<ProductCategory?> UpdateAsync(int id, UpdateProductCategoryRequestDto productCategoryDto);
         Task<ProductCategory?> DeleteAsync(int id);
-        Task<bool> ProductCategoryExists(int id);
+        Task<bool> IsExistProductInProductCategory(int id);
     }
 }

@@ -4,6 +4,7 @@ using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using api.Utilities;
+using Azure.Core;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories
@@ -25,15 +26,15 @@ namespace api.Repositories
 
         public async Task<ProductCategory?> DeleteAsync(int id)
         {
-            ProductCategory? productCategory = await _context.ProductCategories.FirstOrDefaultAsync(x => x.Id == id);
+            ProductCategory? productCategory = await this.GetByIdAsync(id);
 
-            if (productCategory == null || (productCategory != null && productCategory.Status == false))
+            if (productCategory == null)
             {
                 return null;
             }
-            
-            productCategory.Status = false;
-            await _context.SaveChangesAsync();
+
+            await _context.ProductCategories.Where(rec => rec.Id == id).ExecuteDeleteAsync();
+
             return productCategory;
         }
 
@@ -56,27 +57,34 @@ namespace api.Repositories
             return new PaginatedResponse<ProductCategoryDTO>(resultDto, query.PageNumber, query.PageSize, totalElements);
         }
 
-        public Task<ProductCategory?> GetByIdAsync(int id)
+        public async Task<ProductCategory?> GetByIdAsync(int id)
         {
-            return _context.ProductCategories.FirstOrDefaultAsync(i => i.Id == id);
+            return await _context.ProductCategories.FindAsync(id);
         }
 
-        public Task<bool> ProductCategoryExists(int id)
+        public async Task<ProductCategory?> GetByIdIncludeProdcutAsync(int id)
         {
-            return _context.ProductCategories.AnyAsync(p => p.Id == id);
+            return await _context.ProductCategories.Include(productCategory1 => productCategory1.Products).FirstOrDefaultAsync(productCategory => productCategory.Id == id);
+        }
+
+        public async Task<bool> IsExistProductInProductCategory(int id)
+        {
+            ProductCategory? productCategory = await GetByIdIncludeProdcutAsync(id);
+
+            return productCategory == null ? false : productCategory.Products.Any();
         }
 
         public async Task<ProductCategory?> UpdateAsync(int id, UpdateProductCategoryRequestDto productCategoryDto)
         {
-            ProductCategory? existingProductCategory = await _context.ProductCategories.FirstOrDefaultAsync(x => x.Id == id);
+            ProductCategory? existingProductCategory = await this.GetByIdAsync(id);
 
-            if (existingProductCategory == null || (existingProductCategory != null && existingProductCategory.Status == false))
+            if (existingProductCategory == null)
             {
                 return null;
-            }
+            }            
 
-            existingProductCategory.Name = productCategoryDto.Name;
-            existingProductCategory.Status = productCategoryDto.Status;            
+            existingProductCategory.Name = productCategoryDto.Name ?? existingProductCategory.Name;
+            existingProductCategory.Status = productCategoryDto.Status ?? existingProductCategory.Status;            
 
             await _context.SaveChangesAsync();
 

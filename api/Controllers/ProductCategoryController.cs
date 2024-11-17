@@ -3,6 +3,7 @@ using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using api.Utilities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -17,57 +18,113 @@ namespace api.Controllers
         {
             _productCategoryRepo = productCategoryRepo;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] ProductCategoryQueryDTO query)
         {
-            PaginatedResponse<ProductCategoryDTO> list = await _productCategoryRepo.GetAllAsync(query);
-            return Ok(list);
+            try
+            {
+                PaginatedResponse<ProductCategoryDTO> list = await _productCategoryRepo.GetAllAsync(query);
+                return Ok(ApiResponse<PaginatedResponse<ProductCategoryDTO>>.Success(list));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse<NoContent>.Fail(StatusCodes.Status500InternalServerError, null, ex.Message));
+            }            
         }
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            ProductCategory? productCategory = await _productCategoryRepo.GetByIdAsync(id);
-            if (productCategory == null || (productCategory != null && !productCategory.Status))
+            try
             {
-                return NotFound();
+                ProductCategory? productCategory = await _productCategoryRepo.GetByIdAsync(id);
+                if (productCategory == null)
+                {
+                    return NotFound(ApiResponse<NoContent>.Fail(StatusCodes.Status404NotFound));
+                }
+                return Ok(ApiResponse<ProductCategoryDTO>.Success(productCategory.ToProductCategoryDto()));
             }
-            return Ok(productCategory.ToProductCategoryDto());
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse<NoContent>.Fail(StatusCodes.Status500InternalServerError,null,ex.Message));
+            }
+           
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateProductCategoryRequestDto productCategoryDto)
         {
-            ProductCategory productCategory = productCategoryDto.ToProductCategoryFromCreateDto();
+            try
+            {
+                ProductCategory productCategory = productCategoryDto.ToProductCategoryFromCreateDto();
 
-            await _productCategoryRepo.CreateAsync(productCategory);
+                await _productCategoryRepo.CreateAsync(productCategory);
 
-            return CreatedAtAction(nameof(GetById), new { id = productCategory.Id }, productCategory.ToProductCategoryDto());
+                return CreatedAtAction(nameof(GetById), new { id = productCategory.Id }, ApiResponse<ProductCategoryDTO>.Success(productCategory.ToProductCategoryDto(), StatusCodes.Status201Created));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse<NoContent>.Fail(StatusCodes.Status500InternalServerError, null, ex.Message));
+            }
         }
        
         [HttpPut]
         [Route("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateProductCategoryRequestDto productCategoryDto)
         {
-            ProductCategory? productCategory = await _productCategoryRepo.UpdateAsync(id, productCategoryDto);
-            if (productCategory == null) {
-                return NotFound();
+            try
+            {
+                ProductCategory? productCategory = await _productCategoryRepo.GetByIdAsync(id);
+
+                if (productCategory == null)
+                {
+                    return NotFound(ApiResponse<NoContent>.Fail(StatusCodes.Status404NotFound));
+                }
+
+                await _productCategoryRepo.UpdateAsync(id, productCategoryDto);
+
+                return Ok(ApiResponse<ProductCategoryDTO>.Success(productCategory.ToProductCategoryDto()));
             }
-            return Ok(productCategory.ToProductCategoryDto());
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse<NoContent>.Fail(StatusCodes.Status500InternalServerError, null, ex.Message));
+            }           
         }
 
-        
-        [HttpPut]
+        [HttpPatch]
         [Route("delete/{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            ProductCategory? productCategory = await _productCategoryRepo.DeleteAsync(id);
-
-            if (productCategory == null)
+            try
             {
-                return NotFound();
-            }
+                bool isExistProductInProductCategory = await _productCategoryRepo.IsExistProductInProductCategory(id);
 
-            return Ok(productCategory.ToProductCategoryDto());
+                if (!isExistProductInProductCategory)
+                {
+                    UpdateProductCategoryRequestDto updateProductCategoryDto = new UpdateProductCategoryRequestDto
+                    {
+                        Status = false
+                    };
+
+                    ProductCategory? productCategory = await _productCategoryRepo.UpdateAsync(id, updateProductCategoryDto);
+
+                    if (productCategory == null)
+                    {
+                        return NotFound(ApiResponse<NoContent>.Fail(StatusCodes.Status404NotFound));
+                    }
+
+                    return Ok(ApiResponse<ProductCategoryDTO>.Success(productCategory.ToProductCategoryDto()));
+                }
+                else
+                {
+                    return BadRequest(ApiResponse<NoContent>.Fail(StatusCodes.Status400BadRequest, "Cannot delete Product Category - it still contains products !"));
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse<NoContent>.Fail(StatusCodes.Status500InternalServerError, null, ex.Message));
+            }            
         }
     }
 }
