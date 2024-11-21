@@ -24,9 +24,15 @@ namespace api.Repositories
         public async Task<ProductDetail?> DeleteAsync(int id)
         {
             ProductDetail? productDetail = await _context.ProductDetails.FirstOrDefaultAsync(x => x.Id == id);
-            if (productDetail != null || (productDetail != null && productDetail.Status == false)) 
+            if (productDetail == null || (productDetail != null && productDetail.Status == false))
             {
                 return null;
+            }
+
+            ProductImage? productImage = await _context.ProductImages.FirstOrDefaultAsync(x => x.ProductDetailId == id);
+            if (productImage != null)
+            {
+                productImage.ProductDetailId = null;
             }
 
             productDetail.Status = false;

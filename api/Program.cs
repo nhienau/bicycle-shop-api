@@ -23,6 +23,16 @@ CloudinaryConfig cloudinaryConfig = new CloudinaryConfig
     ApiSecret = Environment.GetEnvironmentVariable("CLOUDINARY_API_SECRET") ?? throw new ArgumentException("CLOUDINARY_API_SECRET is missing.")
 };
 
+ZaloPayConfig zaloPayConfig = new ZaloPayConfig
+{
+    AppId = Environment.GetEnvironmentVariable("ZALOPAY_APP_ID") ?? throw new ArgumentException("ZALOPAY_APP_ID is missing."),
+    Key1 = Environment.GetEnvironmentVariable("ZALOPAY_KEY1") ?? throw new ArgumentException("ZALOPAY_KEY1 is missing."),
+    Key2 = Environment.GetEnvironmentVariable("ZALOPAY_KEY2") ?? throw new ArgumentException("ZALOPAY_KEY2 is missing."),
+    Endpoint = Environment.GetEnvironmentVariable("ZALOPAY_API_ENDPOINT") ?? throw new ArgumentException("ZALOPAY_API_ENDPOINT is missing."),
+    RedirectUrl = Environment.GetEnvironmentVariable("ZALOPAY_REDIRECT_URL") ?? throw new ArgumentException("ZALOPAY_REDIRECT_URL is missing."),
+    CallbackUrl = Environment.GetEnvironmentVariable("ZALOPAY_CALLBACK_URL") ?? throw new ArgumentException("ZALOPAY_CALLBACK_URL is missing.")
+};
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -31,7 +41,7 @@ builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>
 {
-    // C?u hÏnh Swagger v?i Bearer Token
+    // C?u h√¨nh Swagger v?i Bearer Token
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -57,7 +67,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 
-    // ThÍm c·c c?u hÏnh kh·c n?u c?n
+    // Th√™m c√°c c?u h√¨nh kh√°c n?u c?n
 });
 
 string corsPolicyName = "specificOrigins";
@@ -67,7 +77,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: corsPolicyName,
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials();// Cho phÈp thÙng tin x·c th?c (cookie, token);
+            policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials();// Cho ph√©p th√¥ng tin x√°c th?c (cookie, token);
         });
 });
 
@@ -108,6 +118,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductDetailRepository, ProductDetailRepository>();
 builder.Services.AddScoped<ICloudinaryRepository, CloudinaryRepository>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
@@ -117,6 +128,8 @@ Account cloudinaryAccount = new Account(cloudinaryConfig.CloudName, cloudinaryCo
 Cloudinary cloudinary = new Cloudinary(cloudinaryAccount);
 cloudinary.Api.Secure = true;
 builder.Services.AddSingleton(cloudinary);
+
+builder.Services.AddSingleton(zaloPayConfig);
 
 var app = builder.Build();
 

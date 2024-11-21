@@ -8,13 +8,18 @@ namespace api.Mappers
     {
         public static ProductImageDto ToProductImageDto(this ProductImage productImage)
         {
-            return new ProductImageDto
+            ProductImageDto productImageDto = new ProductImageDto
             {
                 Id = productImage.Id,
                 Url = productImage.Url,
                 ProductDetailId = productImage.ProductDetailId,
                 ProductId = productImage.ProductId,
             };
+            if (productImage.ProductDetail != null)
+            {
+                productImageDto.ProductDetail = productImage.ProductDetail.ToProductDetailDto();
+            }
+            return productImageDto;
         }
     }
 }

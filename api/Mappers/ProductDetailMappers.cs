@@ -7,7 +7,7 @@ namespace api.Mappers
     {
         public static ProductDetailDto ToProductDetailDto(this ProductDetail productDetail)
         {
-            return new ProductDetailDto
+            ProductDetailDto dto = new ProductDetailDto
             {
                 Id = productDetail.Id,
                 Size = productDetail.Size,
@@ -35,6 +35,7 @@ namespace api.Mappers
                 Product = productDetail.Product.ToProductDto()
                 //Carts = productDetail.Carts.Select(pd => pd.ToCartDto()).ToList()
             };
+            return dto;
         }
 
         public static ProductDetail ToProductDetailFromRequestDto(this ProductDetailRequestDto productDetailDto)

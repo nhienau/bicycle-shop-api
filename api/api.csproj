@@ -43,10 +43,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Dtos\Cart\" />
+    <Folder Include="Dtos\User\" />
     <Folder Include="Dtos\ProductCategory\" />
     <Folder Include="Dtos\OrderDetail\" />
     <Folder Include="Dtos\Order\" />
