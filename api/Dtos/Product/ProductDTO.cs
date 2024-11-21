@@ -1,6 +1,7 @@
-﻿using api.Dtos.ProductCategory;
+using api.Dtos.ProductCategory;
 using api.Dtos.ProductDetail;
 using api.Dtos.ProductImage;
+using api.Dtos.Cart;
 
 namespace api.Dtos.Product
 {

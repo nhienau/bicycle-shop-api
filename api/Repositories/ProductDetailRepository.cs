@@ -42,7 +42,7 @@ namespace api.Repositories
 
         public async Task<ProductDetail?> GetByIdAsync(int id)
         {
-            return await _context.ProductDetails.FindAsync(id);
+            return await _context.ProductDetails.Include(pd => pd.Product).FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public async Task<ProductDetail?> UpdateAsync(int id, ProductDetailRequestDto productDetailDto)

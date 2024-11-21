@@ -22,6 +22,17 @@ namespace api.Mappers
             }
             return dto;
         }
+
+        public static ProductDTO ToProductDto1(this Product productModel)
+        {
+            return new ProductDTO
+            {
+                Id = productModel.Id,
+                Name = productModel.Name,
+                Description = productModel.Description,
+                Status = productModel.Status,
+            };
+        }
         public static Product ToProductFromCreateDto(this CreateProductRequestDto productDto)
         {
             return new Product

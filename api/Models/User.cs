@@ -9,8 +9,11 @@
         public string Address {  get; set; } = string.Empty;
         public string PhoneNumber {  get; set; } = string.Empty;
         public bool Status { get; set; }
-        public List<Cart> Carts { get; } = [];
+        //public ICollection<Cart> Carts { get; set; }
         public List<ProductDetail> ProductDetails { get; } = [];
         public List<Order> Orders { get; set; } = [];
+
+        //public string Otp { get; set; }
+        //public DateTime? OtpExpiration { get; set; }
     }
 }

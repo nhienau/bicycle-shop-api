@@ -9,6 +9,11 @@
         public ProductCategory? ProductCategory { get; set; }
         public bool Status { get; set; }
         public List<ProductDetail> ProductDetails { get; } = [];
+        //public List<Cart> Carts { get; } = [];
+        //public int? UserId { get; set; }
+        //public User? User { get; set; }
+
+
         public List<ProductImage> ProductImages { get; } = [];
     }
 }
