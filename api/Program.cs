@@ -77,7 +77,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: corsPolicyName,
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials();// Cho phép thông tin xác th?c (cookie, token);
+            policy.WithOrigins("http://localhost:5173", "http://localhost:5176").AllowAnyHeader().AllowAnyMethod().AllowCredentials();// Cho phép thông tin xác th?c (cookie, token);
         });
 });
 

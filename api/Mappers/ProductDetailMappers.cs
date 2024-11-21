@@ -16,9 +16,8 @@ namespace api.Mappers
                 Quantity = productDetail.Quantity,
                 Status = productDetail.Status,
                 ProductId = productDetail.ProductId,
-                //Product = productDetail.Product.ToProductDto()
-                //Carts = productDetail.Carts.Select(pd => pd.ToCartDto()).ToList()
             };
+            return dto;
         }
 
         public static ProductDetailDto ToProductDetailDto1(this ProductDetail productDetail)
@@ -35,7 +34,6 @@ namespace api.Mappers
                 Product = productDetail.Product.ToProductDto()
                 //Carts = productDetail.Carts.Select(pd => pd.ToCartDto()).ToList()
             };
-            return dto;
         }
 
         public static ProductDetail ToProductDetailFromRequestDto(this ProductDetailRequestDto productDetailDto)
