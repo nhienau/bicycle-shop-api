@@ -14,6 +14,7 @@ namespace api.Mappers
                 Description = productModel.Description,
                 Status = productModel.Status,
                 ProductDetails = productModel.ProductDetails.Select(pd => pd.ToProductDetailDto()).ToList(),
+                ProductImages = productModel.ProductImages.Select(pi => pi.ToProductImageDto()).ToList(),
             };
             if (productModel.ProductCategory != null)
             {

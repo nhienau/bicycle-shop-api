@@ -43,7 +43,7 @@ namespace api.Repositories
             IQueryable<Product> products = _context.Products
                 .Where(p => p.Status == true)
                 .Include(p => p.ProductCategory)
-                .Include(p => p.ProductDetails)
+                .Include(p => p.ProductDetails.Where(pd => pd.Status == true))
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.Name))
@@ -63,7 +63,11 @@ namespace api.Repositories
 
         public Task<Product?> GetByIdAsync(int id)
         {
-            return _context.Products.Include(p => p.ProductDetails).FirstOrDefaultAsync(i => i.Id == id);
+            return _context.Products
+                .Include(p => p.ProductDetails.Where(pd => pd.Status == true))
+                .Include(p => p.ProductImages)
+                    .ThenInclude(pi => pi.ProductDetail)
+                .FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public Task<bool> ProductExists(int id)

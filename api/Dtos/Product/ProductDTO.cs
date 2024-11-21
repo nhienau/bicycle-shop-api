@@ -1,5 +1,6 @@
 ﻿using api.Dtos.ProductCategory;
 using api.Dtos.ProductDetail;
+using api.Dtos.ProductImage;
 
 namespace api.Dtos.Product
 {
@@ -11,5 +12,6 @@ namespace api.Dtos.Product
         public bool Status { get; set; }
         public ProductCategoryDto? ProductCategory { get; set; }
         public List<ProductDetailDto> ProductDetails { get; set; } = [];
+        public List<ProductImageDto> ProductImages { get; set; } = [];
     }
 }

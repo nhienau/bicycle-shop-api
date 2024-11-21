@@ -1,4 +1,4 @@
-﻿using api.Models;
+﻿using api.Dtos.ProductImage;
 
 namespace api.Dtos.ProductDetail
 {
@@ -11,5 +11,6 @@ namespace api.Dtos.ProductDetail
         public int Quantity { get; set; }
         public bool Status { get; set; }
         public int? ProductId { get; set; }
+        public ProductImageDto? ProductImage { get; set; }
     }
 }
