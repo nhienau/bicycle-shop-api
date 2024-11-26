@@ -1,7 +1,4 @@
-﻿using api.Dtos.ProductDetail;
-using api.Dtos.Cart;
-
-namespace api.Dtos.Product
+﻿namespace api.Dtos.ProductCategory
 {
     public class ProductCategoryDTO
     {
