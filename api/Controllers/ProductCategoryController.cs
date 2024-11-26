@@ -1,4 +1,4 @@
-﻿using api.Dtos.Product;
+﻿using api.Dtos.ProductCategory;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;

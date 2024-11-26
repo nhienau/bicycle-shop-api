@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace api.Dtos.Product
+namespace api.Dtos.ProductCategory
 {
     public class CreateProductCategoryRequestDto
     {
