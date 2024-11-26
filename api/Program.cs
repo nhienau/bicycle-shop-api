@@ -115,6 +115,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
 builder.Services.AddScoped<IProductDetailRepository, ProductDetailRepository>();
 builder.Services.AddScoped<ICloudinaryRepository, CloudinaryRepository>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();

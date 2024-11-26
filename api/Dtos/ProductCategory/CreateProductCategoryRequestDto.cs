@@ -1,12 +1,12 @@
-﻿using api.Dtos.ProductDetail;
-using api.Dtos.Cart;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace api.Dtos.Product
 {
-    public class ProductCategoryDTO
+    public class CreateProductCategoryRequestDto
     {
-        public int Id { get; set; }
+        [Required]
         public string Name { get; set; } = string.Empty;
+        [Required]
         public bool Status { get; set; }
     }
 }
