@@ -12,6 +12,8 @@ namespace api.Dtos.Cart
         public int Quantity { get; set; }
         public ProductDetailDto ProductDetail { get; set; }
 
+        public List<CartItemDTO> Items { get; set; } = new List<CartItemDTO>();
+
         //public List<ProductDetailDto> ProductDetails { get; set; } = [];
         //public ProductDetailDto ProductDetail { get; set; } = new ProductDetailDto();
         //public ProductDetailDto ProductDetails { get; set; }

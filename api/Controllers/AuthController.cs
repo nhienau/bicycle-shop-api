@@ -77,7 +77,6 @@ namespace api.Controllers
             // Lấy JWT từ header Authorization
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             int userId = GetUserIdFromToken(token);
-            //int userId = Convert.ToInt32(HttpContext.User.FindFirstValue("userID"));
 
 
             if (userId == 0)

@@ -4,7 +4,9 @@ using api.Mappers;
 using api.Models;
 using api.Repositories;
 using api.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace api.Controllers
 {
@@ -34,29 +36,106 @@ namespace api.Controllers
             }
             return Ok(carts);
         }
-        //public async Task<ActionResult<List<CartDTO>>> GetAllCarts([FromQuery] int? userId, [FromQuery] string anonymousId)
-        //{
-        //    // Kiểm tra xem cả userId và anonymousId đều không có thì trả về lỗi
-        //    if (userId == null && string.IsNullOrEmpty(anonymousId))
-        //    {
-        //        return BadRequest("UserId or AnonymousId is required.");
-        //    }
 
-        //    // Gọi repository để lấy giỏ hàng
-        //    var carts = await _cartRepo.GetAllCartsAsync(userId, anonymousId);
+        [HttpPost("sync")]
+        public async Task<IActionResult> SyncCart([FromBody] List<CartItemDTO> clientCart)
+        {
+            // Lấy UserId từ token hoặc context
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var userId = GetUserIdFromToken(token);
 
-        //    // Kiểm tra nếu giỏ hàng trống
-        //    if (carts == null || carts.Count == 0)
-        //    {
-        //        return NotFound("No items found in the cart.");
-        //    }
+            if (userId == null)
+            {
+                return Unauthorized("User is not logged in.");
+            }
 
-        //    return Ok(carts); // Trả về danh sách giỏ hàng
-        //}
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    List<CartDTO> carts= await _cartRepo.GetAllCartsAsync();
-        //    return Ok(carts);
-        //}
+            await _cartRepo.SyncCartAsync(userId, clientCart);
+
+            // Trả về giỏ hàng đồng bộ
+            var updatedCart = await _cartRepo.GetCartByUserIdAsync(userId);
+            return Ok(updatedCart);
+        }
+
+        private int GetUserIdFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+            var userIdClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == "nameid" || c.Type == JwtRegisteredClaimNames.Sub);
+
+            if (userIdClaim == null)
+            {
+                return 0; // hoặc giá trị nào đó để thể hiện rằng không tìm thấy Id
+            }
+
+            if (int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return userId;
+            }
+            else
+            {
+                throw new InvalidOperationException("User ID in token is not a valid integer.");
+            }
+        }
+
+        [HttpGet("get")]
+        [Authorize]
+        public async Task<IActionResult> GetCart()
+        {
+            // Lấy UserId từ token
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var userId = GetUserIdFromToken(token);
+
+            if (userId == null)
+            {
+                return Unauthorized("User is not logged in.");
+            }
+
+            var cartItems = await _cartRepo.GetCartByUserIdAsync(userId);
+            return Ok(cartItems);
+        }
+
+        [HttpPost("sync-and-get")]
+        [Authorize]
+        public async Task<IActionResult> SyncAndGetCart([FromBody] List<CartItemDTO> clientCart)
+        {
+            // Lấy UserId từ token
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var userId = GetUserIdFromToken(token);
+
+            if (userId == null)
+            {
+                return Unauthorized("User is not logged in.");
+            }
+
+            // Đồng bộ giỏ hàng
+            await _cartRepo.SyncCartAsync(userId, clientCart);
+
+            // Lấy toàn bộ giỏ hàng đã đồng bộ
+            var updatedCart = await _cartRepo.GetCartByUserIdAsync(userId);
+            return Ok(updatedCart);
+        }
+
+        [HttpPost("addCart")]
+        [Authorize]
+        public async Task<IActionResult> AddToCart([FromBody] CartItemDTO cartItem)
+        {
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var userId = GetUserIdFromToken(token);
+            await _cartRepo.AddToCartAsync(userId, cartItem);
+            await _cartRepo.SaveChangesAsync();
+            return Ok(new { message = "Product added to cart successfully" });
+        }
+
+        [HttpDelete("delete/{productDetailId}")]
+        [Authorize]
+
+        public async Task<IActionResult> RemoveFromCart(int productDetailId)
+        {
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var userId = GetUserIdFromToken(token);
+            await _cartRepo.RemoveFromCartAsync(userId, productDetailId);
+            await _cartRepo.SaveChangesAsync();
+            return Ok(new { message = "Product removed from cart successfully" });
+        }
     }
 }
