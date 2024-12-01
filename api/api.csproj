@@ -8,16 +8,16 @@
 
   <ItemGroup>
     <Compile Remove="Dtos\Cart\NewFolder\**" />
-    <Compile Remove="Dtos\NewFolder\**" />
+    <Compile Remove="Dtos\OrderDetail\**" />
     <Compile Remove="Dtos\User\NewFolder\**" />
     <Content Remove="Dtos\Cart\NewFolder\**" />
-    <Content Remove="Dtos\NewFolder\**" />
+    <Content Remove="Dtos\OrderDetail\**" />
     <Content Remove="Dtos\User\NewFolder\**" />
     <EmbeddedResource Remove="Dtos\Cart\NewFolder\**" />
-    <EmbeddedResource Remove="Dtos\NewFolder\**" />
+    <EmbeddedResource Remove="Dtos\OrderDetail\**" />
     <EmbeddedResource Remove="Dtos\User\NewFolder\**" />
     <None Remove="Dtos\Cart\NewFolder\**" />
-    <None Remove="Dtos\NewFolder\**" />
+    <None Remove="Dtos\OrderDetail\**" />
     <None Remove="Dtos\User\NewFolder\**" />
   </ItemGroup>
 
