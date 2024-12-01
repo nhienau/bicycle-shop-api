@@ -14,5 +14,19 @@ namespace api.Interfaces
 
         Task<PaginatedResponse<CartDTO>> GetCartByUserIdAsync(int id, CartQueryDTO query);
 
+        //Cart GetCartByUserId(int userId);
+        void UpdateCart(Cart cart);
+
+        //Task SyncCartAsync(int userId, IEnumerable<CartItem> cartItems);
+
+        //Task<CartItem> GetCartItemAsync(int userId, int productId);
+        Task<List<CartItemDTO>> GetCartByUserIdAsync(int userId);
+
+         Task SyncCartAsync(int userId, List<CartItemDTO> clientCart);
+         Task SaveChangesAsync();
+
+        Task AddToCartAsync(int userId, CartItemDTO cartItem);
+        Task RemoveFromCartAsync(int userId, int productDetailId);
+
     }
 }

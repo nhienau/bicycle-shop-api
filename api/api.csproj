@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Dtos\Cart\Cart.cs" />
     <Compile Remove="Dtos\ProductDetail\ProductDetailQueryDTO.cs" />
     <Compile Remove="Dtos\ProductDetail\UpdateUserRequestDTO.cs" />
     <Compile Remove="Dtos\User\ChangePasswordRequest.cs" />
@@ -48,7 +49,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\Cart\" />
     <Folder Include="Dtos\User\" />
     <Folder Include="Dtos\ProductCategory\" />
     <Folder Include="Dtos\OrderDetail\" />

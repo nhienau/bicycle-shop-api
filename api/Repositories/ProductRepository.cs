@@ -43,6 +43,7 @@ namespace api.Repositories
             IQueryable<Product> products = _context.Products
                 .Where(p => p.Status == true)
                 .Include(p => p.ProductCategory)
+                .Include(p => p.ProductImages)
                 .Include(p => p.ProductDetails.Where(pd => pd.Status == true))
                 .AsQueryable();
 
@@ -65,6 +66,7 @@ namespace api.Repositories
         {
             return _context.Products
                 .Include(p => p.ProductDetails.Where(pd => pd.Status == true))
+                .Include(p => p.ProductCategory)
                 .Include(p => p.ProductImages)
                     .ThenInclude(pi => pi.ProductDetail)
                 .FirstOrDefaultAsync(i => i.Id == id);

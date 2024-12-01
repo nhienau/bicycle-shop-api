@@ -66,8 +66,7 @@ namespace api.Repositories
                 return null;
             }
 
-            existingUser.Email = userDTO.Name;
-            existingUser.Password = userDTO.Password;
+            existingUser.Email = userDTO.Email;
             existingUser.Name = userDTO.Name;
             existingUser.Address = userDTO.Address;
             existingUser.PhoneNumber = userDTO.PhoneNumber;
