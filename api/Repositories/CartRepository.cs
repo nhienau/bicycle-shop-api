@@ -209,5 +209,38 @@ namespace api.Repositories
                 _context.Carts.Remove(cartItem);
             }
         }
+
+        public async Task<Cart> GetCartItemByIdAsync(int cartItemId)
+        {
+            return await _context.Carts.FindAsync(cartItemId);
+        }
+
+        public async Task<bool> UpdateCartItemQuantityAsync(int cartItemId, int newQuantity)
+        {
+            var cartItem = await GetCartItemByIdAsync(cartItemId);
+            if (cartItem == null) return false;
+
+            cartItem.Quantity = newQuantity;
+            _context.Carts.Update(cartItem);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateProductDetailStockAsync(int productDetailId, int changeInStock)
+        {
+            var productDetail = await _context.ProductDetails.FindAsync(productDetailId);
+            if (productDetail == null) return false;
+
+            if (productDetail.Quantity + changeInStock < 0)
+            {
+                // Không đủ hàng trong kho
+                return false;
+            }
+
+            productDetail.Quantity += changeInStock;
+            _context.ProductDetails.Update(productDetail);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
