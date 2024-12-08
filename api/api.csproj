@@ -50,7 +50,6 @@
   <ItemGroup>
     <Folder Include="Dtos\Cart\" />
     <Folder Include="Dtos\User\" />
-    <Folder Include="Dtos\ProductCategory\" />
     <Folder Include="Dtos\OrderDetail\" />
     <Folder Include="Dtos\Order\" />
   </ItemGroup>

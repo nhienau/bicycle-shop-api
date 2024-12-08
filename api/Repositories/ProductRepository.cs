@@ -64,6 +64,7 @@ namespace api.Repositories
         public Task<Product?> GetByIdAsync(int id)
         {
             return _context.Products
+                .Include(p => p.ProductCategory)
                 .Include(p => p.ProductDetails.Where(pd => pd.Status == true))
                 .Include(p => p.ProductImages)
                     .ThenInclude(pi => pi.ProductDetail)
