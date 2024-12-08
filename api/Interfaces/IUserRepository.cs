@@ -26,6 +26,9 @@ namespace api.Interfaces
 
         Task UpdatePasswordAsync(int userId, string newPasswordHash);
 
+        void SaveRefreshToken(int userId, string refreshToken);
+        bool ValidateRefreshToken(int userId, string refreshToken);
+
         //Task BlacklistTokenAsync(string token);
         //Task SaveOtpAsync(int userId, string otp);
         //Task<bool> ValidateOtpAsync(int userId, string otp);

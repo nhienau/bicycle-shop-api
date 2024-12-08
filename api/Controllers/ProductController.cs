@@ -2,6 +2,7 @@
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
+using api.Repositories;
 using api.Utilities;
 using Microsoft.AspNetCore.Mvc;
 

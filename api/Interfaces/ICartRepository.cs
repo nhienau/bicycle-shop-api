@@ -28,5 +28,10 @@ namespace api.Interfaces
         Task AddToCartAsync(int userId, CartItemDTO cartItem);
         Task RemoveFromCartAsync(int userId, int productDetailId);
 
+        Task<Cart> GetCartItemByIdAsync(int cartItemId);
+
+        Task<bool> UpdateCartItemQuantityAsync(int cartItemId, int newQuantity);
+        Task<bool> UpdateProductDetailStockAsync(int productDetailId, int changeInStock);
+
     }
 }

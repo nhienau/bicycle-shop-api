@@ -137,5 +137,35 @@ namespace api.Controllers
             await _cartRepo.SaveChangesAsync();
             return Ok(new { message = "Product removed from cart successfully" });
         }
+
+        [HttpPut("update-quantity/{cartItemId}/{productDetailId}")]
+        public async Task<IActionResult> UpdateCartItemQuantity(int cartItemId, int productDetailId, [FromBody] int newQuantity)
+        {
+            if (newQuantity < 1)
+            {
+                return BadRequest("Quantity must be at least 1.");
+            }
+
+            var cartItem = await _cartRepo.GetCartItemByIdAsync(cartItemId);
+            if (cartItem == null)
+            {
+                return NotFound("Cart item not found.");
+            }
+
+            int currentQuantity = cartItem.Quantity;
+            int changeInQuantity = newQuantity - currentQuantity;
+
+            // Cập nhật kho
+            bool stockUpdated = await _cartRepo.UpdateProductDetailStockAsync(productDetailId, -changeInQuantity);
+            if (!stockUpdated)
+            {
+                return BadRequest("Not enough stock available.");
+            }
+
+            // Cập nhật số lượng trong giỏ hàng
+            await _cartRepo.UpdateCartItemQuantityAsync(cartItemId, newQuantity);
+
+            return Ok(new { message = "Cart item quantity updated successfully.", newQuantity });
+        }
     }
 }
