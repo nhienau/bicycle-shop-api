@@ -13,9 +13,17 @@ namespace api.Mappers
                 Name = productModel.Name,
                 Description = productModel.Description,
                 Status = productModel.Status,
-                ProductDetails = productModel.ProductDetails.Select(pd => pd.ToProductDetailDto()).ToList(),
-                ProductImages = productModel.ProductImages.Select(pi => pi.ToProductImageDto()).ToList(),
+                //ProductDetails = productModel.ProductDetails.Select(pd => pd.ToProductDetailDto()).ToList(),
+                //ProductImages = productModel.ProductImages.Select(pi => pi.ToProductImageDto()).ToList(),
             };
+            if (productModel.ProductDetails != null)
+            {
+                dto.ProductDetails = productModel.ProductDetails.Select(pd => pd.ToProductDetailDto()).ToList();
+            }
+            if (productModel.ProductImages != null)
+            {
+                dto.ProductImages = productModel.ProductImages.Select(pi => pi.ToProductImageDto()).ToList();
+            }
             if (productModel.ProductCategory != null)
             {
                 dto.ProductCategory = productModel.ProductCategory.ToProductCategoryDto();

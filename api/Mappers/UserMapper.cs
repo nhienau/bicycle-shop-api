@@ -11,10 +11,11 @@ namespace api.Mappers
             {
                 Id = (int)userModel.Id,
                 Email = userModel.Email,
-                Password= userModel.Password,
+                //Password= userModel.Password,
                 Name = userModel.Name,
                 Address = userModel.Address,
                 PhoneNumber = userModel.PhoneNumber,
+                Status = userModel.Status
             };
         }
 
