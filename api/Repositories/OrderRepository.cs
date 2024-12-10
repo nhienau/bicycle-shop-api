@@ -6,6 +6,7 @@ using api.Utilities;
 using Microsoft.EntityFrameworkCore;
 using api.Controllers;
 using api.Data;
+using api.Dtos.OrderStatus;
 
 namespace api.Repositories
 {
@@ -101,19 +102,38 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
         }
         public async Task<PaginatedResponse<OrderDTO>> GetAllAsync(OrderQueryDTO query)
         {
-            //IQueryable<Order> Orders= _context.Orders.Include(c => c.ProductDetail).ThenInclude(p => p.Orders).AsQueryable();
+            string statusName = query.StatusName;
+            string customerName = query.CustomerName;
+            string isoFromDate = query.FromDate;
+            string isoToDate = query.ToDate;
 
-            //if (!string.IsNullOrWhiteSpace(query.Name))
-            //{
-            //    products = products.Where(p => p.Name.Contains(query.Name));
-            //}
-            IQueryable<Order> Orders = _context.Orders.Include(c => c.ProductDetails).AsQueryable();
+            IQueryable<Order> orders = _context.Orders
+                .Include(c => c.User)
+                .Include(c => c.Status)
+                .AsQueryable();
 
-            int totalElements = await Orders.CountAsync();
+            if (!string.IsNullOrEmpty(statusName))
+            {
+                orders = orders.Where(o => o.Status.Name == statusName);
+            }
+
+            if (!string.IsNullOrEmpty(customerName))
+            {
+                orders = orders.Where(o => o.User.Name.ToLower().Contains(customerName.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(isoFromDate) && !string.IsNullOrEmpty(isoToDate))
+            {
+                DateTime fromDate = DateTime.Parse(isoFromDate);
+                DateTime toDate = DateTime.Parse(isoToDate);
+                orders = orders.Where(o => o.OrderDate >= fromDate && o.OrderDate <= toDate);
+            }
+
+            int totalElements = await orders.CountAsync();
 
             int recordsSkipped = (query.PageNumber - 1) * query.PageSize;
 
-            var result = await Orders.Skip(recordsSkipped).Take(query.PageSize).ToListAsync();
+            var result = await orders.Skip(recordsSkipped).Take(query.PageSize).ToListAsync();
             var resultDto = result.Select(c => c.ToOrderDTO()).ToList();
 
             return new PaginatedResponse<OrderDTO>(resultDto, query.PageNumber, query.PageSize, totalElements);
@@ -131,6 +151,46 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
 
             return new PaginatedResponse<OrderDTO>(resultDto, query.PageNumber, query.PageSize, totalElements);
             //return _context.Orders.Include(c => c.ProductDetail).ThenInclude(pd => pd.Product).FirstOrDefaultAsync(i => i.UserId == userId);
+        }
+
+        public async Task<Order?> GetOrderById(int id)
+        {
+            return await _context.Orders
+                .AsNoTracking()
+                .Include(o => o.Status)
+                .Include(o => o.User)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.ProductDetail)
+                        .ThenInclude(pd => pd.Product)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.ProductDetail)
+                        .ThenInclude(pd => pd.ProductImage)
+                .FirstOrDefaultAsync(o => o.Id == id);
+        }
+
+        public async Task<Order?> UpdateOrderStatus(UpdateOrderStatusRequest req)
+        {
+            Order? order = await _context.Orders
+                .Include(o => o.Status)
+                .FirstOrDefaultAsync(o => o.Id == req.OrderId);
+
+            if (order == null)
+            {
+                return null;
+            }
+
+            OrderStatus? status = await _context.OrderStatuses.FirstOrDefaultAsync(o => o.Name == req.StatusName);
+            if (status == null)
+            {
+                return null;
+            }
+            if (order.Status?.Id == status.Id)
+            {
+                return null;
+            }
+            order.Status = status;
+            await _context.SaveChangesAsync();
+            return order;
         }
     }
 }

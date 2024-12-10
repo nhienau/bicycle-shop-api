@@ -39,16 +39,27 @@ namespace api.Mappers
         {
             if (order == null) return null;
 
-            return new OrderDTO
+            OrderDTO dto = new OrderDTO
             {
+                Id = order.Id,
                 UserId = order.UserId,
                 TotalPrice = order.TotalPrice,
                 Address = order.Address,
                 PhoneNumber = order.PhoneNumber,
                 OrderDate = order.OrderDate,
                 StatusName = order.Status?.Name ?? string.Empty,
-                OrderDetails = order.OrderDetails.Select(ToOrderDetailDTO).ToList()
             };
+
+            if (order.OrderDetails != null)
+            {
+                dto.OrderDetails = order.OrderDetails.Select(ToOrderDetailDTO).ToList();
+            }
+
+            if (order.User != null)
+            {
+                dto.User = order.User.ToUserDto();
+            }
+            return dto;
         }
 
         // Hàm chuyển từ OrderDetail Entity sang OrderDetailDTO
@@ -56,12 +67,19 @@ namespace api.Mappers
         {
             if (orderDetail == null) return null;
 
-            return new OrderDetailDTO
+            OrderDetailDTO dto = new OrderDetailDTO
             {
                 ProductDetailId = orderDetail.ProductDetailId,
                 Quantity = orderDetail.Quantity,
                 Price = orderDetail.Price
             };
+
+            if (orderDetail.ProductDetail != null)
+            {
+                dto.ProductDetail = orderDetail.ProductDetail.ToProductDetailDto1();
+            }
+
+            return dto;
         }
     }
 }

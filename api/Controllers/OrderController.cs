@@ -1,5 +1,9 @@
 using api.Dtos.Order;
+using api.Dtos.OrderStatus;
 using api.Interfaces;
+using api.Mappers;
+using api.Models;
+using api.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -13,6 +17,13 @@ namespace api.Controllers
         public OrderController(IOrderRepository orderRepo)
         {
             _OrderRepo = orderRepo;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] OrderQueryDTO query)
+        {
+            PaginatedResponse<OrderDTO> orders = await _OrderRepo.GetAllAsync(query);
+            return Ok(orders);
         }
 
         // List tất cả Orders
@@ -44,6 +55,28 @@ namespace api.Controllers
 
             var order = await _OrderRepo.AddOrderAsync(newOrder);
             return CreatedAtAction(nameof(GetUserOrders), new { userId = order.UserId }, order);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetOrderById([FromRoute] int id)
+        {
+            Order? order = await _OrderRepo.GetOrderById(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            return Ok(order.ToOrderDTO());
+        }
+
+        [HttpPatch("status")]
+        public async Task<IActionResult> UpdateOrderStatus([FromBody] UpdateOrderStatusRequest req)
+        {
+            Order? order = await _OrderRepo.UpdateOrderStatus(req);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            return Ok(order.ToOrderDTO());
         }
     }
 }

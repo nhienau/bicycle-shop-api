@@ -14,6 +14,7 @@ namespace api.Mappers
                 Name = userModel.Name,
                 Address = userModel.Address,
                 PhoneNumber = userModel.PhoneNumber,
+                Status = userModel.Status
             };
         }
 
