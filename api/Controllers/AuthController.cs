@@ -9,6 +9,7 @@ using System.Net.Mail;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Net.WebSockets;
 
 namespace api.Controllers
 {
@@ -35,17 +36,42 @@ namespace api.Controllers
                 return Unauthorized("Invalid email or password.");
             }
 
-            // Tạo JWT token nếu đăng nhập thành công
-            var token = GenerateJwtToken(user);
+            var accessToken = GenerateJwtToken(user);
 
+            // Tạo Access Token ngắn hạn
+            //var accessToken = GenerateAccessToken(user);
+
+            // Tạo Refresh Token dài hạn
+            //var refreshToken = GenerateRefreshToken();
+
+            // Lưu Refresh Token vào database thông qua Repository
+            //_userRepository.SaveRefreshToken(user.Id, refreshToken);
+
+            // Trả về Access Token và Refresh Token
             var response = new LoginResponseDTO
             {
                 Email = user.Email,
-                accessToken = token
+                AccessToken = accessToken,
             };
 
             return Ok(response);
         }
+
+        [HttpPost("refresh")]
+        public IActionResult RefreshToken([FromBody] RefreshTokenRequestDTO request)
+        {
+            var user = _userRepository.GetUserByUserEmail(request.Email);
+
+            if (user == null || !_userRepository.ValidateRefreshToken(user.Id, request.RefreshToken))
+            {
+                return Unauthorized("Invalid refresh token.");
+            }
+
+            var newAccessToken = GenerateAccessToken(user);
+
+            return Ok(new { AccessToken = newAccessToken });
+        }
+
 
         private string GenerateJwtToken(User user)
         {
@@ -69,6 +95,32 @@ namespace api.Controllers
             return tokenHandler.WriteToken(token);
         }
 
+        private string GenerateAccessToken(User user)
+        {
+            var claims = new[]
+            {
+        new Claim(ClaimTypes.Name, user.Email),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+    };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Issuer"],
+                claims,
+                expires: DateTime.Now.AddMinutes(15), // Access Token có thời hạn 15 phút
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private string GenerateRefreshToken()
+        {
+            return Guid.NewGuid().ToString(); // Hoặc sử dụng phương pháp sinh token an toàn hơn
+        }
+
 
         [HttpGet("userinfo")]
         [Authorize] // yêu cầu người dùng đã đăng nhập
@@ -77,13 +129,20 @@ namespace api.Controllers
             // Lấy JWT từ header Authorization
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             int userId = GetUserIdFromToken(token);
-            //int userId = Convert.ToInt32(HttpContext.User.FindFirstValue("userID"));
 
 
             if (userId == 0)
             {
                 return Unauthorized("Invalid token.");
             }
+
+            // Lấy thông tin userId từ HttpContext, không cần giải mã token thủ công
+            //var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "nameid" || c.Type == JwtRegisteredClaimNames.Sub);
+
+            //if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            //{
+            //    return Unauthorized("Invalid token or userId not found.");
+            //}
 
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
@@ -99,7 +158,6 @@ namespace api.Controllers
                 user.Name,
                 user.Address,
                 user.PhoneNumber,
-                // Thêm các thông tin khác nếu cần
             };
 
             return Ok(userInfo);

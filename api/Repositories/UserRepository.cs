@@ -66,8 +66,7 @@ namespace api.Repositories
                 return null;
             }
 
-            existingUser.Email = userDTO.Name;
-            existingUser.Password = userDTO.Password;
+            existingUser.Email = userDTO.Email;
             existingUser.Name = userDTO.Name;
             existingUser.Address = userDTO.Address;
             existingUser.PhoneNumber = userDTO.PhoneNumber;
@@ -123,6 +122,23 @@ namespace api.Repositories
                 user.Password = newPasswordHash;
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public void SaveRefreshToken(int userId, string refreshToken)
+        {
+            var user = _context.Users.Find(userId);
+            if (user != null)
+            {
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7); // Refresh Token có hiệu lực 7 ngày
+                _context.SaveChanges();
+            }
+        }
+
+        public bool ValidateRefreshToken(int userId, string refreshToken)
+        {
+            var user = _context.Users.Find(userId);
+            return user != null && user.RefreshToken == refreshToken && user.RefreshTokenExpiryTime > DateTime.Now;
         }
 
         //public async Task SaveOtpAsync(int userId, string otp)

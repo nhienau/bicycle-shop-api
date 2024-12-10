@@ -59,6 +59,37 @@ namespace api.Controllers
             return Ok(user.ToUserDto());
         }
 
+        [HttpPut]
+        [Route("changepass/{id:int}")]
+        public async Task<IActionResult> UpdatePassword([FromRoute] int id, [FromBody] ChangePassRequestDTO request)
+        {
+            if (string.IsNullOrEmpty(request.NewPassword))
+            {
+                return BadRequest("New password are required.");
+            }
+
+            var user = await _userRepo.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Kiểm tra mật khẩu hiện tại
+            var isCurrentPasswordValid = BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.Password);
+            if (!isCurrentPasswordValid)
+            {
+                return BadRequest("Current password is incorrect.");
+            }
+
+            // Hash mật khẩu mới
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+            // Cập nhật mật khẩu
+            await _userRepo.UpdatePasswordAsync(id, passwordHash);
+
+            return Ok("Password changed successfully.");
+        }
+
 
         [HttpPut]
         [Route("delete/{id:int}")]

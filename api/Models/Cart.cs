@@ -9,6 +9,8 @@
         //public Product? Product { get; set; }
         public int Quantity { get; set; }
 
+        //public List<CartItem> Items { get; set; } = new List<CartItem>();
+
         //public List<ProductDetail> ProductDetails { get; } = [];
         //public object ProductDetails { get; internal set; }
         //public string AnonymousId { get; internal set; }

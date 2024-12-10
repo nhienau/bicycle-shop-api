@@ -102,5 +102,145 @@ namespace api.Repositories
             //return _context.Carts.Include(c => c.ProductDetail).ThenInclude(pd => pd.Product).FirstOrDefaultAsync(i => i.UserId == userId);
         }
 
+        //public Cart GetCartByUserId(int userId)
+        //{
+        //    return _context.Carts
+        //        .Include(c => c.Items)
+        //        .FirstOrDefault(c => c.UserId == userId);
+        //}
+
+        public void UpdateCart(Cart cart)
+        {
+            _context.Carts.Update(cart);
+            _context.SaveChanges();
+        }
+
+        public async Task SyncCartAsync(int userId, List<CartItemDTO> clientCart)
+        {
+            // Lấy giỏ hàng hiện tại từ DB
+            var dbCart = await _context.Carts.Where(c => c.UserId == userId).ToListAsync();
+
+            foreach (var clientItem in clientCart)
+            {
+                var existingCartItem = dbCart.FirstOrDefault(c => c.ProductDetailId == clientItem.ProductDetailId);
+
+                if (existingCartItem != null)
+                {
+                    // Nếu sản phẩm đã tồn tại, cộng dồn số lượng
+                    existingCartItem.Quantity += clientItem.quantity;
+                }
+                else
+                {
+                    // Nếu chưa tồn tại, thêm mới vào DB
+                    _context.Carts.Add(new Cart
+                    {
+                        ProductDetailId = clientItem.ProductDetailId,
+                        //ProductId = clientItem.productId,
+                        UserId = userId,
+                        Quantity = clientItem.quantity
+                    });
+                }
+            }
+
+            // Lưu thay đổi vào DB
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<CartItemDTO>> GetCartByUserIdAsync(int userId)
+        {
+            return await _context.Carts
+                .Where(c => c.UserId == userId)
+                .Select(c => new CartItemDTO
+                {
+                    productId = (int)c.ProductDetail.ProductId,
+                    ProductDetailId = (int)c.ProductDetailId,
+                    quantity = c.Quantity,
+                    price = c.ProductDetail.Price,
+                    name = c.ProductDetail.Product.Name,
+                    color = c.ProductDetail.Color,
+                    size = c.ProductDetail.Size,
+                    //quantityStock = c.ProductDetail.Quantity,
+                    image = c.ProductDetail.ProductImage.Url
+                }).ToListAsync();
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddToCartAsync(int userId, CartItemDTO cartItem)
+        {
+            // Kiểm tra sự tồn tại của ProductDetailId trong bảng ProductDetails
+            var productDetailExists = await _context.ProductDetails
+                .AnyAsync(pd => pd.Id == cartItem.ProductDetailId);
+
+            if (!productDetailExists)
+            {
+                throw new ArgumentException("Invalid ProductDetailId.");
+            }
+
+            var existingCartItem = await _context.Carts
+                .FirstOrDefaultAsync(c => c.UserId == userId && c.ProductDetailId == cartItem.ProductDetailId);
+
+            if (existingCartItem != null)
+            {
+                existingCartItem.Quantity += cartItem.quantity;
+            }
+            else
+            {
+                var newCart = new Cart
+                {
+                    UserId = userId,
+                    ProductDetailId = cartItem.ProductDetailId,
+                    Quantity = cartItem.quantity
+                };
+                await _context.Carts.AddAsync(newCart);
+            }
+        }
+
+        public async Task RemoveFromCartAsync(int userId, int productDetailId)
+        {
+            var cartItem = await _context.Carts
+                .FirstOrDefaultAsync(c => c.UserId == userId && c.ProductDetailId == productDetailId);
+
+            if (cartItem != null)
+            {
+                _context.Carts.Remove(cartItem);
+            }
+        }
+
+        public async Task<Cart> GetCartItemByIdAsync(int cartItemId)
+        {
+            return await _context.Carts.FindAsync(cartItemId);
+        }
+
+        public async Task<bool> UpdateCartItemQuantityAsync(int cartItemId, int newQuantity)
+        {
+            var cartItem = await GetCartItemByIdAsync(cartItemId);
+            if (cartItem == null) return false;
+
+            cartItem.Quantity = newQuantity;
+            _context.Carts.Update(cartItem);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateProductDetailStockAsync(int productDetailId, int changeInStock)
+        {
+            var productDetail = await _context.ProductDetails.FindAsync(productDetailId);
+            if (productDetail == null) return false;
+
+            if (productDetail.Quantity + changeInStock < 0)
+            {
+                // Không đủ hàng trong kho
+                return false;
+            }
+
+            productDetail.Quantity += changeInStock;
+            _context.ProductDetails.Update(productDetail);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
