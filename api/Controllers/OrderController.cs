@@ -5,6 +5,7 @@ using api.Mappers;
 using api.Models;
 using api.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.X9;
 
 namespace api.Controllers
 {
@@ -76,6 +77,13 @@ namespace api.Controllers
             {
                 return NotFound();
             }
+            return Ok(order.ToOrderDTO());
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> GetZaloPayPaymentUrl([FromBody] OrderPaymentRequest request)
+        {
+            Order order = await _OrderRepo.CreateOrderAsync(request);
             return Ok(order.ToOrderDTO());
         }
     }
