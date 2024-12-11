@@ -22,11 +22,18 @@ namespace api.Repositories
 
         public async Task<PaginatedResponse<UserDTO>> GetAllAsync(UserQueryDTO query)
         {
-            IQueryable<User> users = _context.Users.AsQueryable();
+            IQueryable<User> users = _context.Users
+                .Where(u => u.Status == true)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.Name))
             {
-                users = users.Where(p => p.Name.Contains(query.Name));
+                users = users.Where(p => p.Name.ToLower().Contains(query.Name.ToLower()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.PhoneNumber))
+            {
+                users = users.Where(p => p.PhoneNumber == query.PhoneNumber);
             }
 
             int totalElements = await users.CountAsync();
@@ -81,6 +88,16 @@ namespace api.Repositories
             User? user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             if (user == null || (user != null && user.Status == false))
+            {
+                return null;
+            }
+            string[] excludedStatusNames = { "Trả hàng", "Đã giao", "Đã huỷ" };
+            IQueryable<Order> orders = _context.Orders
+                .Where(o => o.User.Id == id)
+                .Where(o => !excludedStatusNames.Contains(o.Status.Name));
+
+            int totalElements = await orders.CountAsync();
+            if (totalElements > 0)
             {
                 return null;
             }

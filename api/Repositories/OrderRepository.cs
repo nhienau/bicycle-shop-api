@@ -106,11 +106,17 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
             string customerName = query.CustomerName;
             string isoFromDate = query.FromDate;
             string isoToDate = query.ToDate;
+            int? userId = query.UserId;
 
             IQueryable<Order> orders = _context.Orders
                 .Include(c => c.User)
                 .Include(c => c.Status)
                 .AsQueryable();
+
+            if (userId.HasValue)
+            {
+                orders = orders.Where(o => o.User.Id == userId);
+            }
 
             if (!string.IsNullOrEmpty(statusName))
             {
@@ -128,6 +134,8 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
                 DateTime toDate = DateTime.Parse(isoToDate);
                 orders = orders.Where(o => o.OrderDate >= fromDate && o.OrderDate <= toDate);
             }
+
+            orders = orders.OrderByDescending(o => o.OrderDate);
 
             int totalElements = await orders.CountAsync();
 
