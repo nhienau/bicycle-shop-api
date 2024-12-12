@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using api.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,18 @@ ZaloPayConfig zaloPayConfig = new ZaloPayConfig
     Endpoint = Environment.GetEnvironmentVariable("ZALOPAY_API_ENDPOINT") ?? throw new ArgumentException("ZALOPAY_API_ENDPOINT is missing."),
     RedirectUrl = Environment.GetEnvironmentVariable("ZALOPAY_REDIRECT_URL") ?? throw new ArgumentException("ZALOPAY_REDIRECT_URL is missing."),
     CallbackUrl = Environment.GetEnvironmentVariable("ZALOPAY_CALLBACK_URL") ?? throw new ArgumentException("ZALOPAY_CALLBACK_URL is missing.")
+};
+
+VNPayConfig vnPayConfig = new VNPayConfig
+{
+    TmnCode = Environment.GetEnvironmentVariable("VNPAY_TMN_CODE") ?? throw new ArgumentException("VNPAY_TMN_CODE is missing."),
+    HashSecret = Environment.GetEnvironmentVariable("VNPAY_HASH_SECRET") ?? throw new ArgumentException("VNPAY_HASH_SECRET is missing."),
+    BaseUrl = Environment.GetEnvironmentVariable("VNPAY_URL") ?? throw new ArgumentException("VNPAY_URL is missing."),
+    Command = "pay",
+    CurrCode = "VND",
+    Version = Environment.GetEnvironmentVariable("VNPAY_VERSION") ?? throw new ArgumentException("VNPAY_VERSION is missing."),
+    Locale = "vn",
+    CallbackUrl = Environment.GetEnvironmentVariable("VNPAY_CALLBACK_URL") ?? throw new ArgumentException("VNPAY_CALLBACK_URL is missing."),
 };
 
 // Add services to the container.
@@ -125,6 +138,7 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IVNPayService, VNPayService>();
 
 // Register Cloudinary as a singleton service
 Account cloudinaryAccount = new Account(cloudinaryConfig.CloudName, cloudinaryConfig.ApiKey, cloudinaryConfig.ApiSecret);
@@ -133,6 +147,7 @@ cloudinary.Api.Secure = true;
 builder.Services.AddSingleton(cloudinary);
 
 builder.Services.AddSingleton(zaloPayConfig);
+builder.Services.AddSingleton(vnPayConfig);
 
 var app = builder.Build();
 

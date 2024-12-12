@@ -27,6 +27,10 @@ namespace api.Data
                 .WithOne(e => e.ProductDetail)
                 .HasForeignKey<ProductImage>(e => e.ProductDetailId)
                 .IsRequired(false);
+
+            modelBuilder.Entity<Product>()
+                .Navigation(p => p.ProductDetails)
+                .AutoInclude(false);
         }
 
         public DbSet<Cart> Carts { get; set; }

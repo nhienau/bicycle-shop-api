@@ -31,7 +31,8 @@ namespace api.Mappers
                 Quantity = productDetail.Quantity,
                 Status = productDetail.Status,
                 ProductId = productDetail.ProductId,
-                Product = productDetail.Product.ToProductDto()
+                Product = productDetail.Product.ToProductDto(),
+                ProductImage = productDetail.ProductImage?.ToProductImageDto() ?? null,
                 //Carts = productDetail.Carts.Select(pd => pd.ToCartDto()).ToList()
             };
         }

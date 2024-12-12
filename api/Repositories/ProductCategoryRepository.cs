@@ -40,18 +40,20 @@ namespace api.Repositories
 
         public async Task<PaginatedResponse<ProductCategoryDTO>> GetAllAsync(ProductCategoryQueryDTO query)
         {
-            List<ProductCategory> productCategories = await _context.ProductCategories.ToListAsync();            
+            IQueryable<ProductCategory> productCategories = _context.ProductCategories
+                .Where(c => c.Status == true)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.Name))
             {
-                productCategories = productCategories.Where(p => p.Name.Contains(query.Name)).ToList();
+                productCategories = productCategories.Where(p => p.Name.Contains(query.Name));
             }
 
-            int totalElements = productCategories.Count();
+            int totalElements = await productCategories.CountAsync();
 
             int recordsSkipped = (query.PageNumber - 1) * query.PageSize;
 
-            var result = productCategories.Skip(recordsSkipped).Take(query.PageSize).ToList();
+            var result = await productCategories.Skip(recordsSkipped).Take(query.PageSize).ToListAsync();
             var resultDto = result.Select(p => p.ToProductCategoryDto()).ToList();
 
             return new PaginatedResponse<ProductCategoryDTO>(resultDto, query.PageNumber, query.PageSize, totalElements);

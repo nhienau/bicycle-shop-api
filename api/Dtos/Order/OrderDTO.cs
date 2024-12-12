@@ -1,5 +1,6 @@
 ﻿using api.Dtos.ProductDetail;
 using api.Dtos.Product;
+using api.Dtos.User;
 
 namespace api.Dtos.Order
 {
@@ -13,6 +14,7 @@ namespace api.Dtos.Order
     public string StatusName { get; set; }
     public DateTime OrderDate { get; set; }
     public List<OrderDetailDTO> OrderDetails { get; set; }
+    public UserDTO? User { get; set; }
 }
 
 }

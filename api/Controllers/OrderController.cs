@@ -1,8 +1,17 @@
 using api.Dtos.Order;
+using api.Dtos.OrderStatus;
 using api.Interfaces;
+<<<<<<< HEAD
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+=======
+using api.Mappers;
+using api.Models;
+using api.Utilities;
+using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.X9;
+>>>>>>> d9c5bb2a565d53e1a0bb25ba74b81c0a90bfc2bd
 
 namespace api.Controllers
 {
@@ -15,6 +24,13 @@ namespace api.Controllers
         public OrderController(IOrderRepository orderRepo)
         {
             _OrderRepo = orderRepo;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] OrderQueryDTO query)
+        {
+            PaginatedResponse<OrderDTO> orders = await _OrderRepo.GetAllAsync(query);
+            return Ok(orders);
         }
 
         // List tất cả Orders
@@ -78,6 +94,35 @@ namespace api.Controllers
 
             var order = await _OrderRepo.AddOrderAsync(newOrder);
             return CreatedAtAction(nameof(GetUserOrders), new { userId = order.UserId }, order);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetOrderById([FromRoute] int id)
+        {
+            Order? order = await _OrderRepo.GetOrderById(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            return Ok(order.ToOrderDTO());
+        }
+
+        [HttpPatch("status")]
+        public async Task<IActionResult> UpdateOrderStatus([FromBody] UpdateOrderStatusRequest req)
+        {
+            Order? order = await _OrderRepo.UpdateOrderStatus(req);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            return Ok(order.ToOrderDTO());
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> GetZaloPayPaymentUrl([FromBody] OrderPaymentRequest request)
+        {
+            Order order = await _OrderRepo.CreateOrderAsync(request);
+            return Ok(order.ToOrderDTO());
         }
     }
 }

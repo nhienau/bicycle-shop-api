@@ -1,4 +1,5 @@
 ﻿using api.Dtos.Order;
+using api.Dtos.OrderStatus;
 using api.Models;
 using api.Utilities;
 
@@ -13,5 +14,8 @@ namespace api.Interfaces
 
         // Sửa lại kiểu dữ liệu cho đúng
         Task<OrderDTO> AddOrderAsync(CreateOrderDTO newOrder);
+        Task<Order?> GetOrderById(int id);
+        Task<Order?> UpdateOrderStatus(UpdateOrderStatusRequest req);
+        Task<Order> CreateOrderAsync(OrderPaymentRequest req);
     }
 }

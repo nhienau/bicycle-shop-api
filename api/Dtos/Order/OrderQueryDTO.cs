@@ -2,8 +2,12 @@
 {
     public class OrderQueryDTO
     {
-        public string? Name { get; set; } = string.Empty;
+        public string? StatusName { get; set; } = string.Empty;
+        public string? CustomerName { get; set; } = string.Empty;
+        public string? FromDate { get; set; } = string.Empty;
+        public string? ToDate { get; set; } = string.Empty;
+        public int? UserId { get; set; }
         public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 12;
+        public int PageSize { get; set; } = 10;
     }
 }
