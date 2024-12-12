@@ -1,17 +1,14 @@
 using api.Dtos.Order;
 using api.Dtos.OrderStatus;
 using api.Interfaces;
-<<<<<<< HEAD
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
-=======
 using api.Mappers;
 using api.Models;
 using api.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.X9;
->>>>>>> d9c5bb2a565d53e1a0bb25ba74b81c0a90bfc2bd
 
 namespace api.Controllers
 {

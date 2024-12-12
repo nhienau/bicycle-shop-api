@@ -104,9 +104,6 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
         }
         public async Task<PaginatedResponse<OrderDTO>> GetAllAsync(OrderQueryDTO query)
         {
-<<<<<<< HEAD
-            IQueryable<Order> Orders = _context.Orders.Include(c => c.ProductDetails).AsQueryable();
-=======
             string statusName = query.StatusName;
             string customerName = query.CustomerName;
             string isoFromDate = query.FromDate;
@@ -117,7 +114,6 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
                 .Include(c => c.User)
                 .Include(c => c.Status)
                 .AsQueryable();
->>>>>>> d9c5bb2a565d53e1a0bb25ba74b81c0a90bfc2bd
 
             if (userId.HasValue)
             {
@@ -155,7 +151,7 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
 
         public async Task<PaginatedResponse<OrderDTO>> GetOrderByUserIdAsync(int userId, OrderQueryDTO query)
         {
-            IQueryable<Order> Orders = _context.Orders.Where(c => c.UserId == userId).Include(c => c.ProductDetails).ThenInclude(pd => pd.Product).AsQueryable();
+            IQueryable<Order> Orders = _context.Orders.Where(c => c.UserId == userId).Include(c => c.ProductDetails).ThenInclude(pd => pd.Product).ThenInclude(pd => pd.ProductImages).AsQueryable();
             int totalElements = await Orders.CountAsync();
             int recordsSkipped = (query.PageNumber - 1) * query.PageSize;
 
