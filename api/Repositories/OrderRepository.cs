@@ -13,9 +13,11 @@ namespace api.Repositories
     public class OrderRepository : IOrderRepository
     {
         private readonly ApplicationDBContext _context;
-        public OrderRepository(ApplicationDBContext context)
+        private readonly IProductDetailRepository _productDetailRepository;
+        public OrderRepository(ApplicationDBContext context, IProductDetailRepository productDetailRepository)
         {
             _context = context;
+            _productDetailRepository = productDetailRepository;
         }
 
         // List tất cả Orders
@@ -199,6 +201,51 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
             order.Status = status;
             await _context.SaveChangesAsync();
             return order;
+        }
+
+        public async Task<Order> CreateOrderAsync(OrderPaymentRequest req)
+        {
+            long totalPrice = 0;
+            foreach (var od in req.OrderDetail)
+            {
+                ProductDetail? pd = await _productDetailRepository.GetByIdAsync(od.ProductDetailId);
+                if (pd == null)
+                {
+                    throw new Exception("Product detail not found");
+                }
+                else
+                {
+                    totalPrice += od.Quantity * pd.Price;
+                    od.Price = pd.Price;
+                }
+            }
+            req.TotalPrice = totalPrice;
+            OrderStatus? status = await _context.OrderStatuses.FirstOrDefaultAsync(s => s.Name == "Chờ thanh toán");
+            Order o = new Order
+            {
+                UserId = req.UserId,
+                TotalPrice = req.TotalPrice ?? 0,
+                Address = req.Address,
+                PhoneNumber = req.PhoneNumber,
+                OrderDate = DateTime.Now,
+                Status = status,
+            };
+            await _context.Orders.AddAsync(o);
+            await _context.SaveChangesAsync();
+            int orderId = o.Id;
+            foreach (var od in req.OrderDetail)
+            {
+                OrderDetail d = new OrderDetail
+                {
+                    OrderId = orderId,
+                    ProductDetailId = od.ProductDetailId,
+                    Quantity = od.Quantity,
+                    Price = od.Price ?? 0
+                };
+                await _context.OrderDetails.AddAsync(d);
+            }
+            await _context.SaveChangesAsync();
+            return o;
         }
     }
 }

@@ -29,6 +29,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Dtos\OrderDetail\OrderDetailPaymentRequest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
@@ -53,8 +57,6 @@
     <Folder Include="Dtos\Cart\" />
     <Folder Include="Dtos\User\" />
     <Folder Include="Dtos\ProductCategory\" />
-    <Folder Include="Dtos\OrderDetail\" />
-    <Folder Include="Dtos\Order\" />
   </ItemGroup>
 
 </Project>

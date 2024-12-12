@@ -16,5 +16,6 @@ namespace api.Interfaces
         Task<OrderDTO> AddOrderAsync(CreateOrderDTO newOrder);
         Task<Order?> GetOrderById(int id);
         Task<Order?> UpdateOrderStatus(UpdateOrderStatusRequest req);
+        Task<Order> CreateOrderAsync(OrderPaymentRequest req);
     }
 }
