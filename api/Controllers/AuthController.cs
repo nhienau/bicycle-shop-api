@@ -201,7 +201,8 @@ namespace api.Controllers
                 Name = registerDto.FullName,
                 Address = registerDto.Address,
                 PhoneNumber = registerDto.PhoneNumber,
-                Password = registerDto.Password // Chưa băm, sẽ được băm trong repository
+                Password = registerDto.Password, // Chưa băm, sẽ được băm trong repository
+                Status = true
             };
 
             await _userRepository.RegisterUserAsync(user);
