@@ -1,6 +1,9 @@
 using api.Dtos.Order;
 using api.Dtos.OrderStatus;
 using api.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 using api.Mappers;
 using api.Models;
 using api.Utilities;
@@ -43,6 +46,38 @@ namespace api.Controllers
             var orders = await _OrderRepo.GetOrdersByUserIdWithDetailsAsync(userId, productName);
 
             return Ok(orders);
+        }
+
+        [HttpGet("user-orders")]
+        [Authorize]
+        public async Task<IActionResult> GetUserOrdersFromToken([FromQuery] string? productName = null)
+        {
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            int userId = GetUserIdFromToken(token);
+            var orders = await _OrderRepo.GetOrdersByUserIdWithDetailsAsync(userId, productName);
+
+            return Ok(orders);
+        }
+
+        private int GetUserIdFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+            var userIdClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == "nameid" || c.Type == JwtRegisteredClaimNames.Sub);
+
+            if (userIdClaim == null)
+            {
+                return 0; // hoặc giá trị nào đó để thể hiện rằng không tìm thấy Id
+            }
+
+            if (int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return userId;
+            }
+            else
+            {
+                throw new InvalidOperationException("User ID in token is not a valid integer.");
+            }
         }
 
         // Thêm mới một Order
