@@ -23,7 +23,7 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
     // Lấy tất cả các đơn hàng cùng với OrderDetails và ProductDetails
     var ordersQuery = _context.Orders
         .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.ProductDetail)
+            .ThenInclude(od => od.ProductDetail).ThenInclude(pd => pd.Product)
         .Include(o => o.Status)
         .AsQueryable();
 
@@ -48,7 +48,7 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
             var ordersQuery = _context.Orders
         .Where(o => o.UserId == userId)
         .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.ProductDetail)
+            .ThenInclude(od => od.ProductDetail).ThenInclude(pd => pd.Product)
         .Include(o => o.Status)
         .AsQueryable();
 
@@ -101,12 +101,6 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
         }
         public async Task<PaginatedResponse<OrderDTO>> GetAllAsync(OrderQueryDTO query)
         {
-            //IQueryable<Order> Orders= _context.Orders.Include(c => c.ProductDetail).ThenInclude(p => p.Orders).AsQueryable();
-
-            //if (!string.IsNullOrWhiteSpace(query.Name))
-            //{
-            //    products = products.Where(p => p.Name.Contains(query.Name));
-            //}
             IQueryable<Order> Orders = _context.Orders.Include(c => c.ProductDetails).AsQueryable();
 
             int totalElements = await Orders.CountAsync();
@@ -121,7 +115,6 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
 
         public async Task<PaginatedResponse<OrderDTO>> GetOrderByUserIdAsync(int userId, OrderQueryDTO query)
         {
-            //return _context.Orders.FirstOrDefaultAsync(i => i.UserId == id);
             IQueryable<Order> Orders = _context.Orders.Where(c => c.UserId == userId).Include(c => c.ProductDetails).ThenInclude(pd => pd.Product).AsQueryable();
             int totalElements = await Orders.CountAsync();
             int recordsSkipped = (query.PageNumber - 1) * query.PageSize;
@@ -130,7 +123,6 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
             var resultDto = result.Select(c => c.ToOrderDTO()).ToList();
 
             return new PaginatedResponse<OrderDTO>(resultDto, query.PageNumber, query.PageSize, totalElements);
-            //return _context.Orders.Include(c => c.ProductDetail).ThenInclude(pd => pd.Product).FirstOrDefaultAsync(i => i.UserId == userId);
         }
     }
 }
