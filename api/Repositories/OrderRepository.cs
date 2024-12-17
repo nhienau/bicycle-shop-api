@@ -25,9 +25,14 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
 {
     // Lấy tất cả các đơn hàng cùng với OrderDetails và ProductDetails
     var ordersQuery = _context.Orders
-        .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.ProductDetail).ThenInclude(pd => pd.Product)
+        .AsNoTracking()
         .Include(o => o.Status)
+        .Include(o => o.OrderDetails)
+            .ThenInclude(od => od.ProductDetail)
+                .ThenInclude(pd => pd.Product)
+        .Include(o => o.OrderDetails)
+            .ThenInclude(od => od.ProductDetail)
+                .ThenInclude(pd => pd.ProductImage)
         .AsQueryable();
 
     // Nếu productName có giá trị, lọc theo tên sản phẩm
@@ -231,8 +236,10 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
             await _context.Orders.AddAsync(o);
             await _context.SaveChangesAsync();
             int orderId = o.Id;
+            var ids = new List<int> { };
             foreach (var od in req.OrderDetail)
             {
+                ids.Add(od.ProductDetailId);
                 OrderDetail d = new OrderDetail
                 {
                     OrderId = orderId,
@@ -241,6 +248,13 @@ public async Task<List<OrderDTO>> GetAllOrdersWithDetailsAsync(string? productNa
                     Price = od.Price ?? 0
                 };
                 await _context.OrderDetails.AddAsync(d);
+
+                // Decrease quantity
+                var productDetails = _context.ProductDetails.Where(p => ids.Contains(p.Id)).ToList();
+                foreach (var product in productDetails)
+                {
+                    product.Quantity -= 1;
+                }
             }
             await _context.SaveChangesAsync();
             return o;
